@@ -1,5 +1,6 @@
 #pragma once
 #include "../common.h"
+#include "CUser.h"
 
 // Representa o estado de uma sessão
 enum class SessionState {

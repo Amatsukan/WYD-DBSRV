@@ -39,5 +39,5 @@ private:
     OnConnectCallback m_onAdminConnect;
     OnDisconnectCallback m_onDisconnect;
     OnDataReceivedCallback m_onUserData;
-    OnDataReceivedCallback m_onAdminData
+    OnDataReceivedCallback m_onAdminData;
 };

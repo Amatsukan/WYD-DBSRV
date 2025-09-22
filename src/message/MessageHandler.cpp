@@ -12,7 +12,7 @@ void MessageHandler::processClientMessage(int sessionId, char* msg) {
     MSG_STANDARD* header = reinterpret_cast<MSG_STANDARD*>(msg);
 
     if (!(header->Type & FLAG_GAME2DB)) {
-        Logger::Log("Pacote invalido recebido do GameServer " + std::to_string(sessionId), "MessageHandler", true);
+        Logger::Log("Pacote invalido recebido do GameServer " + std::to_string(sessionId), "MessageHandler");
         return;
     }
 

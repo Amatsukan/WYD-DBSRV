@@ -37,13 +37,13 @@ bool DatabaseManager::writeAccount(const STRUCT_ACCOUNTFILE& accountFile) {
             std::filesystem::create_directories(dirPath);
         }
     } catch (const std::filesystem::filesystem_error& e) {
-        Logger::Log("Erro ao criar diretorio para conta: " + std::string(e.what()), "Database", true);
+        Logger::Log("Erro ao criar diretorio para conta: " + std::string(e.what()), "Database");
         return false;
     }
 
     std::ofstream file(path, std::ios::binary | std::ios::trunc);
     if (!file.is_open()) {
-        Logger::Log("ERRO: Nao foi possivel escrever no arquivo da conta: " + path, "Database", true);
+        Logger::Log("ERRO: Nao foi possivel escrever no arquivo da conta: " + path, "Database");
         return false;
     }
 
@@ -67,7 +67,7 @@ bool DatabaseManager::createCharacter(const std::string& accountName, const std:
             std::filesystem::create_directories(dirPath);
         }
     } catch (const std::filesystem::filesystem_error& e) {
-        Logger::Log("Erro ao criar diretorio para personagem: " + std::string(e.what()), "Database", true);
+        Logger::Log("Erro ao criar diretorio para personagem: " + std::string(e.what()), "Database");
         return false;
     }
 
@@ -87,7 +87,7 @@ bool DatabaseManager::deleteCharacter(const std::string& charName) {
     try {
         return std::filesystem::remove(getCharPath(charName));
     } catch (const std::filesystem::filesystem_error& e) {
-        Logger::Log("Erro ao deletar personagem: " + std::string(e.what()), "Database", true);
+        Logger::Log("Erro ao deletar personagem: " + std::string(e.what()), "Database");
         return false;
     }
 }
@@ -115,7 +115,7 @@ std::vector<std::string> DatabaseManager::getAllAccountFiles() {
             }
         }
     } catch (const std::filesystem::filesystem_error& e) {
-        Logger::Log("Erro ao listar arquivos de conta: " + std::string(e.what()), "Database", true);
+        Logger::Log("Erro ao listar arquivos de conta: " + std::string(e.what()), "Database");
     }
     return files;
 }

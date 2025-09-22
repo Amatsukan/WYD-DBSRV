@@ -89,7 +89,7 @@ void DataManager::importItems() {
                     db.writeAccount(acc);
                     Logger::Log("Item importado para a conta " + std::string(ids), "DataManager");
                 } else {
-                     Logger::Log("Nao ha espaco no bau da conta " + std::string(ids), "DataManager", true);
+                     Logger::Log("Nao ha espaco no bau da conta " + std::string(ids), "DataManager");
                 }
                 
                 try { std::filesystem::remove(entry.path()); }
