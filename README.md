@@ -29,35 +29,50 @@ Before you begin, ensure you have the following installed:
     *   **Linux:** A modern C++ compiler like GCC or Clang (`sudo apt-get install build-essential`).
 *   [**CMake**](https://cmake.org/download/): Ensure it is added to your system's PATH.
 
-### Build Instructions
+### Build Instructions (Recommended)
 
-This project uses CMake, allowing it to be built on multiple platforms.
+This project includes convenient scripts to automate the build process on both Windows and Linux.
 
 1.  **Open a terminal** in the project's root directory (`DBSrv`).
 
-2.  **Create a build directory:**
+2.  **Run the build script for your system:**
+    *   **On Windows:**
+        ```cmd
+        .\build.bat
+        ```
+    *   **On Linux:**
+        ```sh
+        ./build.sh
+        ```
+
+The compiled executable, `DBSrv` (or `DBSrv.exe` on Windows), will be created in the `build` directory.
+
+The scripts support the following commands:
+*   `build`: (Default) Configures and compiles the project.
+*   `rebuild`: Cleans the build directory and then compiles the project from scratch.
+*   `clean`: Deletes the build directory.
+
+For example, to rebuild the project on Linux, you would run: `./build.sh rebuild`.
+
+### Manual Compilation
+
+If you prefer to build manually, you can use CMake directly:
+
+1.  **Create a build directory:**
     ```sh
     mkdir build
     cd build
     ```
 
-3.  **Configure the project with CMake:**
+2.  **Configure the project:**
     ```sh
-    # This will detect your compiler and generate the appropriate build files.
     cmake ..
     ```
 
-4.  **Compile the project:**
+3.  **Compile the project:**
     ```sh
-    # This will build the executable in the current directory (build/).
     cmake --build .
     ```
-
-The compiled executable, `DBSrv` (or `DBSrv.exe` on Windows), will be located in the `build` directory.
-
-### Visual Studio Code
-
-If you are using Visual Studio Code, you can configure the `tasks.json` and `launch.json` files for your specific platform. The provided configuration is for Windows.
 
 ---
 
