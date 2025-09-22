@@ -89,13 +89,11 @@ Pull requests are welcome! To maintain consistency, please try to follow the exi
 
 ## Contributors
 
+*   **Project modernization**
+    *   Amatsukan
 *   **Original Decompilation & Development:**
     *   Klafke
     *   TheHouse
-    **Project Documentation**
-*   **Build System Modernization (CMake/MSVC)**
-    *   Amatsukan
-
 ## License
 
 This source code is released under the [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html).
