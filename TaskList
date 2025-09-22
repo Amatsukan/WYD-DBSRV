@@ -1,0 +1,79 @@
+coisas que precisam ser migradas do https://github.com/ErickAlcan/W2PP/tree/master/Code/DBSrv
+
+1. Carregamento e Persistência de Configurações
+[ ] Implementar ReadConfig: parser de dbsrv.ini ou similar para caminhos de arquivos, portas e flags.
+
+[ ] Implementar WriteConfig: salvar alterações em runtime no arquivo de configuração.
+
+[ ] Desenvolver DrawConfig (ou equivalente): rotina de debug/print das configurações carregadas.
+
+2. Módulo de Administração
+[ ] ReadAdmin: carregar lista de administradores e permissões de um arquivo.
+
+[ ] ProcessAdminClientMessage: tratar mensagens vindas do TMSrv para comandos de admin.
+
+[ ] ProcessAdminMessage: lógica interna de execução de comandos (ban, kick, reload).
+
+[ ] SendAdminSignal / SendAdminMessage / SendAdminParm / SendAdminState: composição e envio de pacotes de resposta administrativa.
+
+3. Processamento de Mensagens de Cliente
+[ ] ProcessClientMessage: dispatcher geral para todos os IDs de pacote DB (login, loadchar, savechar etc.).
+
+[ ] Criar ou completar a registry pattern para bindar IDs de pacotes a callbacks, em vez de switch/case estático.
+
+4. Controles de Conta e Sessões
+[ ] DisableAccount & EnableAccount: ban/unban por data ou flags no DB.
+
+[ ] GetUserFromSocket & GetAdminFromSocket: mapear conexões TCP para estruturas de sessão.
+
+[ ] GetEmptyUser: alocar novos slots de usuário para conexões simultâneas.
+
+5. Transferência e Sincronização de Guildas
+[ ] ReadTransGuildInfo & WriteTransGuildInfo: importar/exportar informações de guilda entre servidores.
+
+[ ] ConvertGuildNumber: ajuste de IDs de guilda ao gravar ou ler estruturas de item.
+
+6. Logging e Auditoria Diária
+[ ] StartLog: inicializar arquivos de log diários.
+
+[ ] Log: gravar eventos gerais (login, erros, transações).
+
+[ ] DayLog_ExpLog: relatório diário de ganho de experiência.
+
+[ ] DayLog_ReadAccountInDir: tabulação de acessos por diretório de conta.
+
+[ ] DayLog_ItemLog: auditoria de usos de itens.
+
+7. Timers e Tarefas Periódicas
+[ ] ProcessSecTimer: tarefas a cada segundo (timeout de conexões, flush de logs).
+
+[ ] ProcessMinTimer: tarefas a cada minuto (auto-save, contadores, estatísticas).
+
+[ ] Manter e atualizar contadores SecCounter, MinCounter, HourCounter.
+
+8. Utilitários de Arquivo e I/O
+[ ] Função file_exists: verificação genérica de existência de path.
+
+[ ] Padronizar caminhos de dados via configuração (pastas de accounts, chars, items, guilds).
+
+9. Módulos de Banco de Dados em Arquivos
+[ ] CFileDB: implementar métodos de leitura/gravação para: contas, personagens, inventário de itens, guilds, ranking.
+
+[ ] CAccountDB: autenticação, criação e atualização de senha.
+
+[ ] CCharacterDB: load/save de dados completos de personagem.
+
+[ ] CRanking: cálculo e persistência de tabelas de ranking (PvP, level).
+
+[ ] CUser: estrutura de usuário em memória, sync de stats off-line.
+
+[ ] CReadFiles: helpers genéricos para parsing de arquivos binários e textuais.
+
+10. Build, Dependências e Modernização
+[ ] Adaptar projeto para CMake ou scripts de build cross-platform.
+
+[ ] Atualizar includes, paths e flags para remover dependências de VS2015-only.
+
+[ ] Garantir compatibilidade Windows/Linux (se for o caso).
+
+[ ] Incluir target de testes unitários para cada módulo crítico.
