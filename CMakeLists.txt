@@ -1,39 +1,45 @@
-# Define a versão mínima do CMake e o nome do projeto.
 cmake_minimum_required(VERSION 3.10)
 project(DBSrv CXX)
 
+# Encontra automaticamente todos os arquivos .cpp dentro do diretório src.
+# NOTA: Ao adicionar um novo arquivo .cpp, pode ser necessário rodar o CMake novamente.
+file(GLOB_RECURSE SRV_SOURCES "src/*.cpp")
+
+# Encontra os fontes da biblioteca comum.
+file(GLOB COMMON_LIB_SOURCES "common.lib/*.cpp")
+
+# Define os fontes do executável
+set(DBSrv_SOURCES
+    ${SRV_SOURCES}
+    ${COMMON_LIB_SOURCES}
+)
+
 # Adiciona o executável
-add_executable(DBSrv
-    # Ponto de entrada e classes principais
-    src/main.cpp
-    src/Server.cpp
+add_executable(DBSrv ${DBSrv_SOURCES})
 
-    # Módulos
-    src/config/ConfigManager.cpp
-    src/log/logger.cpp
-    src/data/GameData.cpp
-    src/data/DataManager.cpp
-    src/data/RankingSystem.cpp
-    src/db/DatabaseManager.cpp
-    src/message/MessageHandler.cpp
-    src/network/NetworkManager.cpp
-    src/session/SessionManager.cpp
-    src/task/TaskManager.cpp
-
-    # Bibliotecas comuns
-    common.lib/Basedef.cpp
-    common.lib/CPSock.cpp
-)
-
-# Adiciona os diretórios que contêm arquivos de cabeçalho (.h).
+# Adiciona os diretórios de inclusão para os cabeçalhos.
 target_include_directories(DBSrv PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/common.lib
+    "${CMAKE_CURRENT_SOURCE_DIR}/src"
+    "${CMAKE_CURRENT_SOURCE_DIR}/common.lib"
 )
 
-# Linka as bibliotecas necessárias do Windows
-target_link_libraries(DBSrv PRIVATE
-    ws2_32      # Para funções de rede (Winsock)
-    winmm       # Para timeGetTime
-)
+# Configurações e bibliotecas específicas para Windows
+if(WIN32)
+    # Adiciona o arquivo de recurso e o modo de aplicação Windows
+    target_sources(DBSrv PRIVATE DBSrv.rc)
+    set_target_properties(DBSrv PROPERTIES WIN32_EXECUTABLE ON)
+
+    # Linka as bibliotecas do Windows necessárias.
+    target_link_libraries(DBSrv PRIVATE
+        ws2_32
+        winmm
+    )
+endif()
+
+# Configurações e bibliotecas específicas para Linux
+if(UNIX AND NOT APPLE)
+    # Bibliotecas equivalentes ou necessárias no Linux
+    target_link_libraries(DBSrv PRIVATE
+        pthread
+    )
+endif()

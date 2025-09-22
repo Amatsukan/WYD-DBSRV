@@ -24,56 +24,40 @@ The `DBSrv` is a critical part of the server's distributed architecture. It acts
 
 Before you begin, ensure you have the following installed:
 
-*   [**Visual Studio 2022**](https://visualstudio.microsoft.com/downloads/): Make sure to include the **"Desktop development with C++"** workload during installation.
+*   **A C++ compiler:**
+    *   **Windows:** [Visual Studio](https://visualstudio.microsoft.com/downloads/) with the "Desktop development with C++" workload.
+    *   **Linux:** A modern C++ compiler like GCC or Clang (`sudo apt-get install build-essential`).
 *   [**CMake**](https://cmake.org/download/): Ensure it is added to your system's PATH.
 
----
+### Build Instructions
 
-### Method 1: Visual Studio Code (Recommended)
+This project uses CMake, allowing it to be built on multiple platforms.
 
-This project is pre-configured for easy compilation and debugging within Visual Studio Code.
+1.  **Open a terminal** in the project's root directory (`DBSrv`).
 
-1.  Open the `DBSrv` folder in VS Code.
-2.  Place a breakpoint anywhere in the code.
-3.  Press **F5**.
-
-VS Code will automatically run the build task (`build.bat`) and then launch the debugger.
-
----
-
-### Method 2: Using the Batch Script
-
-A simple batch file is provided to compile the project directly.
-
-Open a terminal (like Command Prompt or PowerShell) and run:
-
-```cmd
-.\build.bat
-```
-
-This will use CMake to generate the build files and compile the project in the `build/` directory.
-
----
-
-### Method 3: Manual Compilation with CMake
-
-You can also generate the project files manually and compile them.
-
-1.  Open a terminal (like the Developer Command Prompt for VS 2022).
-2.  Navigate to the `DBSrv` directory.
-3.  Run the following commands:
-
+2.  **Create a build directory:**
     ```sh
-    # Create a build directory
     mkdir build
     cd build
-
-    # Generate the Visual Studio solution
-    cmake .. -G "Visual Studio 17 2022" -A x64
-
-    # Build the project
-    cmake --build . --config Debug
     ```
+
+3.  **Configure the project with CMake:**
+    ```sh
+    # This will detect your compiler and generate the appropriate build files.
+    cmake ..
+    ```
+
+4.  **Compile the project:**
+    ```sh
+    # This will build the executable in the current directory (build/).
+    cmake --build .
+    ```
+
+The compiled executable, `DBSrv` (or `DBSrv.exe` on Windows), will be located in the `build` directory.
+
+### Visual Studio Code
+
+If you are using Visual Studio Code, you can configure the `tasks.json` and `launch.json` files for your specific platform. The provided configuration is for Windows.
 
 ---
 
