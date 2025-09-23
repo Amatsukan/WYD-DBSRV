@@ -1,79 +1,44 @@
-coisas que precisam ser migradas do https://github.com/ErickAlcan/W2PP/tree/master/Code/DBSrv
+Tarefas migradas e consolidadas de https://github.com/ErickAlcan/W2PP/tree/master/Code/DBSrv
 
-1. Carregamento e Persistência de Configurações
-[ ] Implementar ReadConfig: parser de dbsrv.ini ou similar para caminhos de arquivos, portas e flags.
+# Task List - DBSrv (Revisada)
 
-[ ] Implementar WriteConfig: salvar alterações em runtime no arquivo de configuração.
+## 1. Arquitetura e Refatoração
+- [ ] **INCOMPLETO:** Criar ou completar um *registry pattern* para associar IDs de pacotes a funções de tratamento, eliminando a necessidade de `switch/case`.
+- [ ] **from-W2PP:** Mapear e encapsular (ou eliminar) as variáveis globais do projeto original (ex: `Sapphire`, `g_pGuildWar`) dentro das novas classes de gerenciamento. (Origem: `Server.h`)
 
-[ ] Desenvolver DrawConfig (ou equivalente): rotina de debug/print das configurações carregadas.
+## 2. Configuração e Inicialização
+- [ ] **INCOMPLETO:** Implementar uma rotina de debug para exibir as configurações carregadas no console (`DrawConfig` do original).
+- [ ] **INCOMPLETO:** Validar a leitura do arquivo `Admin.txt` e o carregamento das permissões de administrador.
+- [ ] **from-W2PP:** Implementar o carregamento dos status base das classes/mobs a partir da pasta `BaseMob`. (Origem: `Server.cpp`, função `WinMain`)
 
-2. Módulo de Administração
-[ ] ReadAdmin: carregar lista de administradores e permissões de um arquivo.
+## 3. Gerenciamento de Contas e Personagens
+- [ ] **from-W2PP:** Implementar a criação (`AddAccount`), atualização (`UpdateAccount`) e verificação de nomes (`DBCheckImpleName`) de contas. (Origem: `CFileDB.cpp`)
+- [ ] **from-W2PP:** Implementar a funcionalidade de obter os dados para a tela de seleção de personagem (`DBGetSelChar`). (Origem: `CFileDB.cpp`)
+- [ ] **from-W2PP:** Implementar o sistema de senhas seguras (`GetEncPassword`, `SetEncPassword`). (Origem: `CFileDB.cpp`)
+- [ ] **from-W2PP:** Adicionar a funcionalidade para rastrear contas por MAC address (`GetAccountsByMac`) e o sistema de "conta primária". (Origem: `CFileDB.cpp`)
 
-[ ] ProcessAdminClientMessage: tratar mensagens vindas do TMSrv para comandos de admin.
+## 4. Sistema de Guildas
+- [ ] **from-W2PP:** Implementar as mecânicas de guerra (`_MSG_War`) e aliança (`_MSG_GuildAlly`) entre guildas. (Origem: `CFileDB.cpp`)
+- [ ] **from-W2PP:** Implementar o recebimento de "guild zone reports" e a retransmissão da informação para os demais servidores. (Origem: `CFileDB.cpp`, case `_MSG_GuildZoneReport`)
+- [ ] **from-W2PP:** Implementar o reset semanal da fama (fame) das guildas. (Origem: `Server.cpp`, função `ProcessSecTimer`)
 
-[ ] ProcessAdminMessage: lógica interna de execução de comandos (ban, kick, reload).
+## 5. Sincronização e Integração
+- [ ] **from-W2PP:** Implementar o sistema de "redirecionamento" via `redirect.txt` para transferência de personagens entre servidores. (Origem: `Server.cpp`, função `WinMain`)
+- [ ] **from-W2PP:** Implementar a troca de servidor por um jogador (`_MSG_DBServerChange`), incluindo a geração de chaves de segurança temporárias. (Origem: `CFileDB.cpp`)
+- [ ] **from-W2PP:** Replicar o mecanismo de importação (contas, itens, donates) baseado em arquivos depositados em diretórios `Common`. (Origem: `CReadFiles.cpp`)
+- [ ] **from-W2PP:** Implementar a atualização de senhas de contas a partir de arquivos (`UpdateUser`). (Origem: `CReadFiles.cpp`)
+- [ ] **from-W2PP:** Criar rotina para gerar arquivos de status de conexão para serem lidos por um painel web. (Origem: `CReadFiles.cpp`, `UpdateConnection`)
 
-[ ] SendAdminSignal / SendAdminMessage / SendAdminParm / SendAdminState: composição e envio de pacotes de resposta administrativa.
+## 6. Funcionalidades de Jogo (Gameplay)
+- [ ] **from-W2PP:** Implementar o sistema de "Cápsulas de Personagem" (encapsular, ler e restaurar). (Origem: `CFileDB.cpp`, cases `_MSG_DBPutInCapsule`, `_MSG_DBCapsuleInfo`, `_MSG_DBOutCapsule`)
+- [ ] **from-W2PP:** Implementar a "Trombeta Mágica" (`_MSG_MagicTrumpet`) para envio de mensagens globais. (Origem: `CFileDB.cpp`)
+- [ ] **from-W2PP:** Adicionar a lógica de "troca de nome" de personagem no login, baseada em itens específicos. (Origem: `CFileDB.cpp`, case `_MSG_DBAccountLogin`)
 
-3. Processamento de Mensagens de Cliente
-[ ] ProcessClientMessage: dispatcher geral para todos os IDs de pacote DB (login, loadchar, savechar etc.).
+## 7. Logging e Timers
+- [ ] **INCOMPLETO:** Implementar `DayLog_ReadAccountInDir` para gerar logs diários de ganho de experiência. (Origem: `Server.cpp`)
+- [ ] **from-W2PP:** Implementar a função `ProcessRecord` para salvar logs detalhados de operações específicas. (Origem: `CFileDB.cpp`)
+- [ ] **INCOMPLETO:** Implementar um timer de minuto (`ProcessMinTimer`) e refinar o timer de segundo (`ProcessSecTimer`/`periodicUpdate`).
 
-[ ] Criar ou completar a registry pattern para bindar IDs de pacotes a callbacks, em vez de switch/case estático.
-
-4. Controles de Conta e Sessões
-[ ] DisableAccount & EnableAccount: ban/unban por data ou flags no DB.
-
-[ ] GetUserFromSocket & GetAdminFromSocket: mapear conexões TCP para estruturas de sessão.
-
-[ ] GetEmptyUser: alocar novos slots de usuário para conexões simultâneas.
-
-5. Transferência e Sincronização de Guildas
-[ ] ReadTransGuildInfo & WriteTransGuildInfo: importar/exportar informações de guilda entre servidores.
-
-[ ] ConvertGuildNumber: ajuste de IDs de guilda ao gravar ou ler estruturas de item.
-
-6. Logging e Auditoria Diária
-[ ] StartLog: inicializar arquivos de log diários.
-
-[ ] Log: gravar eventos gerais (login, erros, transações).
-
-[ ] DayLog_ExpLog: relatório diário de ganho de experiência.
-
-[ ] DayLog_ReadAccountInDir: tabulação de acessos por diretório de conta.
-
-[ ] DayLog_ItemLog: auditoria de usos de itens.
-
-7. Timers e Tarefas Periódicas
-[ ] ProcessSecTimer: tarefas a cada segundo (timeout de conexões, flush de logs).
-
-[ ] ProcessMinTimer: tarefas a cada minuto (auto-save, contadores, estatísticas).
-
-[ ] Manter e atualizar contadores SecCounter, MinCounter, HourCounter.
-
-8. Utilitários de Arquivo e I/O
-[ ] Função file_exists: verificação genérica de existência de path.
-
-[ ] Padronizar caminhos de dados via configuração (pastas de accounts, chars, items, guilds).
-
-9. Módulos de Banco de Dados em Arquivos
-[ ] CFileDB: implementar métodos de leitura/gravação para: contas, personagens, inventário de itens, guilds, ranking.
-
-[ ] CAccountDB: autenticação, criação e atualização de senha.
-
-[ ] CCharacterDB: load/save de dados completos de personagem.
-
-[ ] CRanking: cálculo e persistência de tabelas de ranking (PvP, level).
-
-[ ] CUser: estrutura de usuário em memória, sync de stats off-line.
-
-[ ] CReadFiles: helpers genéricos para parsing de arquivos binários e textuais.
-
-10. Build, Dependências e Modernização
-[ ] Adaptar projeto para CMake ou scripts de build cross-platform.
-
-[ ] Atualizar includes, paths e flags para remover dependências de VS2015-only.
-
-[ ] Garantir compatibilidade Windows/Linux (se for o caso).
-
-[ ] Incluir target de testes unitários para cada módulo crítico.
+## 8. Build e Utilitários
+- [ ] **INCOMPLETO:** Incluir um target de testes unitários no `CMakeLists.txt`.
+- [ ] **INCOMPLETO:** Implementar uma função genérica `file_exists` para verificação de existência de arquivos.
