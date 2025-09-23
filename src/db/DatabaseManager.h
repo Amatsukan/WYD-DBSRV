@@ -12,7 +12,7 @@ class DatabaseManager {
     std::string getAccountByChar(const std::string& charName);
     
     std::vector<std::string> getAllAccountFiles();
-    
+    STRUCT_SELCHAR getSelChar(const STRUCT_ACCOUNTFILE& accountFile);
     
     private:
     std::string getAccountPath(const std::string& accountName);

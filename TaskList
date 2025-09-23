@@ -35,7 +35,7 @@ Cada tarefa nesta lista possui uma estimativa de custo de complexidade para o de
     -   **Custo de Complexidade:** Baixo
     -   **Justificativa:** Tarefa simples de I/O, lendo os valores das variáveis de configuração e imprimindo no console.
 
-- [ ] **INCOMPLETO:** Validar a leitura do arquivo `Admin.txt` e o carregamento das permissões de administrador.
+- [x] **CONCLUÍDO:** Validar a leitura do arquivo `Admin.txt` e o carregamento das permissões de administrador.
     -   **Custo de Complexidade:** Médio
     -   **Justificativa:** Envolve I/O de arquivo e lógica de parsing para carregar os IPs em uma estrutura de dados segura.
 

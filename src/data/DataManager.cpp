@@ -183,3 +183,7 @@ void DataManager::updateConnectionStatus() {
 void DataManager::updateConnectionData() {
     // TODO: Implement this method
 }
+
+void DataManager::minuteUpdate() {
+    Logger::Log("Executando tarefas de minuto.", "DataManager");
+}

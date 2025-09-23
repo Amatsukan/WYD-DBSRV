@@ -34,6 +34,10 @@ void Server::shutdown() {
 void Server::processTick() {
     m_dataManager->periodicUpdate();
 }
+
+void Server::processMinTimer() {
+    m_dataManager->minuteUpdate();
+}
 void Server::sendToUser(int serverId, const char* buffer, size_t size) {
     auto session = m_userSessions->getSession(serverId);
     if (session && session->socket != INVALID_SOCKET) {
@@ -90,21 +94,25 @@ void Server::readAdminIPs() {
         MessageBoxA(NULL, "Arquivo '../config/Admin.txt' não encontrado.\nUm novo foi criado com o IP 127.0.0.1 como exemplo.", "Aviso de Configuração", MB_OK | MB_ICONWARNING);
     }
     std::string line;
+    int count = 0;
     while (std::getline(file, line)) {
         if (line.empty() || line[0] == '#') {
             continue;
         }
         int idx;
         unsigned int a, b, c, d;
+        std::string ip_str = line;
         std::replace(line.begin(), line.end(), '.', ' ');
         std::stringstream ss(line);
         if (ss >> idx >> a >> b >> c >> d) {
             if (idx >= 0 && idx < MAX_ADMIN) {
                 m_adminIPs[idx] = (d << 24) | (c << 16) | (b << 8) | a;
+                Logger::Log("Admin IP carregado - Indice: " + std::to_string(idx) + ", IP: " + ip_str, "Server");
+                count++;
             }
         }
     }
-    Logger::Log("Lista de IPs de admin carregada.", "Server");
+    Logger::Log(std::to_string(count) + " IPs de admin carregados.", "Server");
 }
 
 bool Server::initializeServerIndex() {

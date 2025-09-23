@@ -26,6 +26,12 @@ void TaskManager::run() {
         // Chama a função de tick do servidor
         m_server.processTick();
 
+        m_tickCounter++;
+        if (m_tickCounter >= 60) {
+            m_server.processMinTimer();
+            m_tickCounter = 0;
+        }
+
         // Dorme pelo tempo definido
         std::this_thread::sleep_for(std::chrono::milliseconds(SERVER_TICK_RATE_MS));
     }

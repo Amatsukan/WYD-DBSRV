@@ -11,6 +11,7 @@ class DataManager
     ~DataManager();
     void initialize();
     void periodicUpdate();
+    void minuteUpdate();
     void writeGuildInfo();
     
     GameData& getGameData() { return m_gameData; }

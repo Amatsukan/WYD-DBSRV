@@ -18,6 +18,7 @@ class Server {
     void shutdown();
     
     void processTick();
+    void processMinTimer();
     void drawConfig();
     
     // Funções de comunicação para serem usadas por outros módulos

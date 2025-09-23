@@ -54,6 +54,17 @@ void MessageHandler::handleAccountLogin(int sessionId, MSG_AccountLogin* msg) {
         return;
     }
 
+    MSG_DBCNFAccountLogin sm{};
+    sm.Type = _MSG_DBCNFAccountLogin;
+    sm.ID = msg->ID;
+    sm.Size = sizeof(MSG_DBCNFAccountLogin);
+
+    strncpy_s(sm.AccountName, accFile.Info.AccountName, ACCOUNTNAME_LENGTH);
+    memcpy(sm.Cargo, accFile.Cargo, sizeof(accFile.Cargo));
+    sm.Coin = accFile.Coin;
+    sm.sel = db.getSelChar(accFile);
+
+    m_server.sendToUser(sessionId, (char*)&sm, sm.Size);
 }
 
 MessageHandler::MessageHandler(Server& server) : m_server(server) {}

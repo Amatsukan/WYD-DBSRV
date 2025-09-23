@@ -141,3 +141,22 @@ std::string DatabaseManager::getFirstKey(const std::string& source) {
     }
     return "etc";
 }
+
+STRUCT_SELCHAR DatabaseManager::getSelChar(const STRUCT_ACCOUNTFILE& accountFile) {
+    STRUCT_SELCHAR sel{};
+    for (int i = 0; i < MOB_PER_ACCOUNT; ++i) {
+        strncpy_s(sel.Name[i], accountFile.Char[i].MobName, NAME_LENGTH);
+        memcpy(sel.Equip[i], accountFile.Char[i].Equip, sizeof(sel.Equip[i]));
+
+        if (sel.Equip[i][0].sIndex == 22 || sel.Equip[i][0].sIndex == 23 || sel.Equip[i][0].sIndex == 24 || sel.Equip[i][0].sIndex == 25 || sel.Equip[i][0].sIndex == 32)
+			sel.Equip[i][0].sIndex = accountFile.mobExtra[i].ClassMaster == MORTAL ? 21 : accountFile.mobExtra[i].MortalFace + 7;
+
+        sel.Guild[i] = accountFile.Char[i].Guild;
+        sel.SPX[i] = accountFile.Char[i].SPX;
+        sel.SPY[i] = accountFile.Char[i].SPY;
+        sel.Score[i] = accountFile.Char[i].CurrentScore;
+        sel.Coin[i] = accountFile.Char[i].Coin;
+        sel.Exp[i] = accountFile.Char[i].Exp;
+    }
+    return sel;
+}
