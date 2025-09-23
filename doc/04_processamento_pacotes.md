@@ -1,15 +1,15 @@
 # 4. Processamento de Pacotes de Rede
 
-Depois que `MainWndProc` recebe um evento de leitura (`WSA_READ` ou `WSA_READADMIN`), os dados brutos são passados para funções específicas que entendem o protocolo da aplicação.
+Quando o `NetworkManager` detecta dados em um socket, ele invoca os callbacks `onUserData` ou `onAdminData`. Estes, por sua vez, chamam os métodos do `MessageHandler` para processar os pacotes.
 
-## `ProcessClientMessage(conn, msg)`
+## `MessageHandler::processClientMessage(sessionId, msg)`
 
 Esta função trata as requisições vindas dos **servidores do jogo**.
 
 -   **Validação:** Realiza uma verificação básica no cabeçalho do pacote para garantir que é uma mensagem válida do tipo `FLAG_GAME2DB`.
--   **Delegação:** O trabalho pesado é delegado para o objeto `cFileDB` (através da chamada `cFileDB.ProcessMessage(msg, conn)`). A classe `CFileDB` contém a lógica para interpretar a requisição específica (ex: "carregar personagem", "salvar item no baú") e executar a operação correspondente no sistema de arquivos.
+-   **Delegação:** A lógica de negócio é delegada para os módulos apropriados, principalmente o `DataManager` e o `DatabaseManager`. O `MessageHandler` atua como um roteador, interpretando a requisição (ex: "carregar personagem", "salvar item no baú") e chamando os métodos correspondentes nos outros módulos para executar a operação.
 
-## `ProcessAdminMessage(conn, msg)`
+## `MessageHandler::processAdminMessage(sessionId, msg)`
 
 Esta função trata os comandos vindos dos **clientes de administração**.
 

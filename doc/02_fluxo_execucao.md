@@ -1,23 +1,27 @@
-# 2. Ponto de Entrada e Fluxo de Execução (`WinMain`)
+# 2. Ponto de Entrada e Fluxo de Execução (`main`)
 
-A função `WinMain` é o ponto de entrada da aplicação e orquestra todo o processo de inicialização do servidor.
+A função `main` é o ponto de entrada da aplicação e orquestra todo o processo de inicialização do servidor. Como uma aplicação de console, todo o feedback e interação ocorrem via linha de comando.
 
 ## Passos da Inicialização
 
-1.  **Criação da Janela:** Uma janela principal é criada usando a API do Windows. Esta janela não serve para interação do usuário, mas sim como um **monitor de status** em tempo real e para receber mensagens de eventos de rede.
+1.  **Criação do Objeto `Server`:** A aplicação cria uma instância do objeto `Server`, que encapsula toda a lógica do servidor.
 
-2.  **Inicialização de Rede:** O Winsock (`WSAInitialize`) é iniciado para habilitar a comunicação por sockets.
+2.  **Inicialização do Servidor (`server.init()`):** O método `init` é chamado para preparar o servidor para a execução.
+    -   **Inicialização do Logger:** O sistema de log é iniciado para gravar eventos em `DBServidor.log`.
+    -   **Carregamento de Dados e Configurações:** O servidor lê vários arquivos essenciais do disco:
+        -   `Config.txt`: Configurações gerais.
+        -   `Admin.txt`: Lista de IPs com permissão de administrador.
+        -   O índice do servidor é determinado com base no `hostname` e no `serverlist.txt`.
+        -   Dados de jogo como `Sapphire` e `LastCapsule` são carregados.
+        -   O `DataManager` é inicializado, carregando informações de guilds e rankings.
+    -   **Inicialização de Rede:** O `NetworkManager` é iniciado e as portas para os servidores do jogo (`DB_PORT`) e para administração (`ADMIN_PORT`) são abertas.
+    -   **Inicialização de Tarefas:** O `TaskManager` é iniciado para executar tarefas periódicas.
 
-3.  **Carregamento de Dados e Configurações:** O servidor lê vários arquivos essenciais do disco para carregar seu estado inicial:
-    -   `Config.txt`: Configurações gerais.
-    -   `ServerList.txt`: Lista de servidores do jogo e seus IPs. É crucial para o `DBSrv` saber quais servidores podem se conectar a ele.
-    -   `Admin.txt`: Lista de IPs com permissão de administrador.
-    -   `BaseMob/`: Arquivos com status base das classes de personagem.
-    -   `common/item.txt`: Definições de todos os itens do jogo.
-    -   `Guilda.bin`: Informações sobre as guilds.
+3.  **Loop Principal (`server.run()`):** Após a inicialização, o servidor entra no seu loop principal.
+    -   Uma thread separada é iniciada para lidar com a entrada do console (`handleConsoleInput`), permitindo que administradores digitem comandos.
+    -   O servidor permanece em execução, processando conexões de rede e tarefas agendadas.
 
-4.  **Abertura de Portas (Listeners):** O servidor começa a escutar por conexões em duas portas distintas:
-    -   `DB_PORT`: Para os servidores do jogo.
-    -   `ADMIN_PORT`: Para os clientes de administração.
-
-5.  **Loop de Mensagens:** Após a inicialização, o servidor entra no loop de mensagens principal do Windows (`while(GetMessage(...))`). Ele permanece neste estado, processando eventos de forma assíncrona até que um comando de desligamento seja recebido.
+4.  **Desligamento (`server.shutdown()`):** Quando o comando `exit` é recebido, o processo de desligamento é iniciado.
+    -   Os módulos de tarefas e rede são parados.
+    -   Dados importantes, como configurações e informações de guilds, são salvos em disco.
+    -   O logger é finalizado.

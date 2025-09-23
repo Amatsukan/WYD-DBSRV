@@ -1,29 +1,42 @@
-# 3. Processador de Eventos (`MainWndProc`)
+# 3. Processamento de Eventos e Comandos
 
-A função `MainWndProc` é o coração do servidor, responsável por tratar todos os eventos recebidos pela janela principal. Os eventos mais importantes são os de rede, que são enviados pelo Windows como mensagens `WM_USER` customizadas.
+Com a arquitetura baseada em console, o processamento de eventos é dividido entre a entrada de comandos do administrador e o tratamento de eventos de rede de forma assíncrona.
 
-## Principais Mensagens de Rede Tratadas
+## 1. Comandos do Console
 
--   **`WSA_ACCEPT` (Nova Conexão de Servidor do Jogo):**
-    -   Disparada quando um servidor do jogo tenta se conectar na `DB_PORT`.
-    -   O `DBSrv` aceita a conexão e valida o IP do servidor.
-    -   Se o IP for autorizado (presente na `ServerList.txt`), a conexão é mantida e o `DBSrv` envia os dados iniciais necessários (informações de guilds, guerras, etc.).
+O servidor inicia uma thread dedicada (`handleConsoleInput`) para ler a entrada do console de forma contínua, permitindo que um administrador gerencie o servidor em tempo real.
 
--   **`WSA_ACCEPTADMIN` (Nova Conexão de Administrador):**
-    -   Ocorre quando um cliente de admin tenta se conectar na `ADMIN_PORT`.
-    -   O IP é validado contra a lista de `Admin.txt`.
-    -   Se autorizado, o `DBSrv` inicia o processo de autenticação (login/senha).
+-   **Comandos Disponíveis:**
+    -   `exit`: Inicia o processo de desligamento seguro do servidor.
+    -   `status`: Exibe o status atual das sessões de usuários (servidores de jogo) e administradores conectados.
 
--   **`WSA_READ` (Dados Recebidos de um Servidor do Jogo):**
-    -   Indica que um servidor conectado enviou um pacote de dados (uma requisição).
-    -   O `DBSrv` lê os dados do socket e os encaminha para a função `ProcessClientMessage` para tratamento.
+## 2. Eventos de Rede (Callbacks)
 
--   **`WSA_READADMIN` (Dados Recebidos de um Administrador):**
-    -   Indica que um cliente de admin enviou um comando.
-    -   Os dados são lidos e encaminhados para a função `ProcessAdminMessage`.
+O `NetworkManager` gerencia todas as conexões de baixo nível e notifica o `Server` sobre eventos de rede através de callbacks. Isso elimina a necessidade de um loop de mensagens do Windows.
 
-## Outras Mensagens
+-   **`onUserConnect(sessionId)`:**
+    -   Chamado quando um novo servidor de jogo se conecta.
+    -   O `Server` registra a conexão e notifica o `MessageHandler`.
 
--   **`WM_TIMER`:** Disparada a cada segundo para executar tarefas de manutenção (`ProcessSecTimer`).
--   **`WM_PAINT`:** Redesenha a janela, chamando `DrawConfig()` para exibir o status atual das conexões.
--   **`WM_CLOSE` / `WM_DESTROY`:** Gerencia o desligamento seguro do servidor.
+-   **`onUserDisconnect(sessionId)`:**
+    -   Chamado quando um servidor de jogo se desconecta.
+    -   O `Server` limpa a sessão.
+
+-   **`onUserData(sessionId)`:**
+    -   Chamado quando um pacote de dados é recebido de um servidor de jogo.
+    -   O `Server` delega o processamento dos dados para o `MessageHandler`, que irá decodificar e tratar a mensagem específica (ex: login de conta, salvar personagem).
+
+-   **Callbacks de Administração (`onAdminConnect`, `onAdminDisconnect`, `onAdminData`):**
+    -   Funcionam de maneira análoga aos callbacks de usuário, mas para o canal de administração.
+    -   No `onAdminConnect`, há uma verificação de segurança para garantir que o IP do administrador está na lista de IPs autorizados (`Admin.txt`).
+
+## 3. Tarefas Periódicas (`TaskManager`)
+
+O `TaskManager` executa tarefas agendadas em uma thread separada, como:
+-   Atualizações periódicas de dados (`periodicUpdate` no `DataManager`).
+-   Importação de itens, doações e usuários.
+-   Atualização de senhas.
+-   Geração de logs diários.
+-   Reset semanal de rankings.
+
+Este modelo assíncrono é mais eficiente e adequado para uma aplicação de servidor, que precisa lidar com múltiplas operações simultâneas sem depender de uma interface gráfica.

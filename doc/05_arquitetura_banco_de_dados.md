@@ -1,10 +1,10 @@
-# 5. Arquitetura do Banco de Dados (FileDB)
+# 5. Arquitetura do Banco de Dados
 
 Uma das características mais importantes do `DBSrv` é sua abordagem para a persistência de dados.
 
 ## Sistema Baseado em Arquivos
 
-O `DBSrv` **não utiliza um sistema de gerenciamento de banco de dados tradicional** como MySQL, PostgreSQL ou SQL Server. Em vez disso, ele implementa um "banco de dados" baseado em arquivos, onde a classe `CFileDB` é a principal interface para essas operações.
+O `DBSrv` **não utiliza um sistema de gerenciamento de banco de dados tradicional** como MySQL, PostgreSQL ou SQL Server. Em vez disso, ele implementa um "banco de dados" baseado em arquivos, onde a classe `DatabaseManager` é a principal interface para essas operações.
 
 ### Como Funciona:
 
@@ -14,7 +14,7 @@ O `DBSrv` **não utiliza um sistema de gerenciamento de banco de dados tradicion
     -   Inventário.
     -   Itens equipados.
     -   Baú (warehouse).
--   **Operações:** Quando um servidor de jogo solicita "carregar um personagem", o `DBSrv` localiza o arquivo da conta, o lê para a memória, encontra os dados do personagem específico e os envia de volta. O processo de salvar segue o caminho inverso: recebe os dados do personagem e sobrescreve a seção correspondente no arquivo da conta.
+-   **Operações:** Quando um servidor de jogo solicita "carregar um personagem", o `DBSrv` (através do `DatabaseManager`) localiza o arquivo da conta, o lê para a memória, encontra os dados do personagem específico e os envia de volta. O processo de salvar segue o caminho inverso: recebe os dados do personagem e sobrescreve a seção correspondente no arquivo da conta.
 
 ### Vantagens e Desvantagens
 
