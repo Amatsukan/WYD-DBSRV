@@ -1,0 +1,4 @@
+# Este arquivo lista os IPs que tem permissão de administrador.
+# O formato é: [índice] [IP]
+# Exemplo:
+0 127.0.0.1

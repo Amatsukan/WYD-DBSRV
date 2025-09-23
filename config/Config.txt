@@ -1,0 +1,6 @@
+# Arquivo de configuração principal do DBSrv
+# Sapphire: valor de exemplo (padrão: 8)
+Sapphire 8
+
+# LastCapsule: valor de exemplo (padrão: 0)
+LastCapsule 0
