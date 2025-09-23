@@ -26,6 +26,10 @@ Cada tarefa nesta lista possui uma estimativa de custo de complexidade para o de
     -   **Custo de Complexidade:** Alto
     -   **Justificativa:** É uma refatoração estrutural que pode causar quebras de compilação em todo o projeto. Exige cuidado para reorganizar as dependências e includes.
 
+- [ ] **NOVO:** Centralizar o acesso a arquivos em uma entidade responsável que garanta a existência e criação com valores padrão.
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Refatoração de grande impacto que afeta todos os pontos do código que lidam com I/O de arquivos. Exige a criação de uma nova abstração e a substituição de todas as chamadas diretas, com risco de introduzir bugs em múltiplos sistemas (log, contas, configs).
+
 ## 2. Configuração e Inicialização
 - [ ] **INCOMPLETO:** Implementar uma rotina de debug para exibir as configurações carregadas no console (`DrawConfig` do original).
     -   **Custo de Complexidade:** Baixo
