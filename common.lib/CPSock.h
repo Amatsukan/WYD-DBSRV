@@ -53,7 +53,7 @@ typedef struct _HEADER
 class  CPSock
 {   
 public:
-	unsigned int  Sock;
+	SOCKET Sock;
 	char   *pSendBuffer;
 	char   *pRecvBuffer;
 	int		nSendPosition;

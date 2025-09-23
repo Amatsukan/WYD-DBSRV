@@ -33,6 +33,8 @@ class Server {
     
     
     private:
+    private:
+    void createExampleAdminFile();
     void readAdminIPs();
     bool initializeServerIndex();
     // Callbacks para o NetworkManager
@@ -63,3 +65,4 @@ class Server {
     
     
 };
+

@@ -2468,7 +2468,7 @@ extern STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 
 extern unsigned char g_pAttribute[1024][1024];
 
-extern char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
+extern char g_pServerList[10][11][64];
 
 extern int g_dwInitItem;
 

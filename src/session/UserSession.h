@@ -1,6 +1,7 @@
 #pragma once
 #include "../common.h"
 #include "CUser.h"
+#include "../../common.lib/Basedef.h"
 
 // Representa o estado de uma sessão
 enum class SessionState {
@@ -17,6 +18,7 @@ struct UserSession {
     SessionState state = SessionState::Disconnected;
     CUser userData; // Mantém a estrutura CUser original para compatibilidade
     CPSock sockHelper; // Usa a classe CPSock para buffer e leitura de mensagens
+    STRUCT_ACCOUNTFILE accountFile;
 
     UserSession() = default;
 
@@ -27,6 +29,7 @@ struct UserSession {
         state = other.state;
         userData = other.userData;
         sockHelper = std::move(other.sockHelper);
+        accountFile = other.accountFile;
         other.socket = INVALID_SOCKET;
     }
     UserSession& operator=(UserSession&& other) noexcept {
@@ -36,6 +39,7 @@ struct UserSession {
             state = other.state;
             userData = other.userData;
             sockHelper = std::move(other.sockHelper);
+            accountFile = other.accountFile;
             other.socket = INVALID_SOCKET;
         }
         return *this;

@@ -8,7 +8,6 @@ GameData::GameData() {
     memset(g_pGuildAlly, 0, sizeof(g_pGuildAlly));
     memset(ItemDayLog, 0, sizeof(ItemDayLog));
     memset(g_pBaseSet, 0, sizeof(g_pBaseSet));
-    memset(g_pServerList, 0, sizeof(g_pServerList));
 }
 void GameData::loadBaseMobs() {
     Logger::Log("Carregando status base dos personagens...", "GameData");

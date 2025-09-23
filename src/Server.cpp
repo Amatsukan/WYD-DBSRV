@@ -1,9 +1,10 @@
 #include "Server.h"
+#include "message/MessageHandler.h"
 #include "config/ConfigManager.h"
 #include "log/logger.h"
 #include "network/NetworkManager.h"
 #include "session/SessionManager.h"
-#include "message/MessageHandler.h"
+
 #include "task/TaskManager.h"
 #include "data/DataManager.h"
 #include "db/DatabaseManager.h"
@@ -11,8 +12,8 @@
 Server::Server() {
     m_config = std::make_unique<ConfigManager>();
     m_database = std::make_unique<DatabaseManager>();
-    m_userSessions = std::make_unique<SessionManager>(MAX_SERVER, "User");
-    m_adminSessions = std::make_unique<SessionManager>(MAX_ADMIN, "Admin");
+    m_userSessions = std::make_unique<SessionManager>(MAX_SERVER);
+    m_adminSessions = std::make_unique<SessionManager>(MAX_ADMIN);
     m_network = std::make_unique<NetworkManager>(*m_userSessions, *m_adminSessions);
     m_dataManager = std::make_unique<DataManager>(*this);
     m_messageHandler = std::make_unique<MessageHandler>(*this);
@@ -25,6 +26,12 @@ Server::~Server() {
     shutdown();
 }
 bool Server::init() {
+    WSADATA wsaData;
+    if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+        Logger::Log("Falha ao iniciar o Winsock.", "Server", true);
+        return false;
+    }
+
     Logger::Init("DBServidor.log");
     Logger::Log("Iniciando servidor...", "Server");
     readAdminIPs();
@@ -63,4 +70,5 @@ bool Server::init() {
     
     
 }
+
 #include "Server_Methods.inl"

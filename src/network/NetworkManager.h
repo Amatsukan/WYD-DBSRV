@@ -21,8 +21,8 @@ public:
 
 
 private:
-    void acceptLoop(SOCKET listenSocket, SessionManager& sessionManager);
-    void clientHandlerLoop(int sessionId, SessionManager& sessionManager);
+    void acceptLoop(SOCKET listenSocket, SessionManager& sessionManager, bool isAdmin);
+    void clientHandlerLoop(int sessionId, SessionManager& sessionManager, bool isAdmin);
 
     SOCKET createUserListenSocket(int port);
     
@@ -37,7 +37,8 @@ private:
 
     OnConnectCallback m_onUserConnect;
     OnConnectCallback m_onAdminConnect;
-    OnDisconnectCallback m_onDisconnect;
+    OnDisconnectCallback m_onUserDisconnect;
+    OnDisconnectCallback m_onAdminDisconnect;
     OnDataReceivedCallback m_onUserData;
     OnDataReceivedCallback m_onAdminData;
 };

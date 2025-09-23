@@ -12,6 +12,7 @@ void setLastCapsule(unsigned short value) { m_lastCapsule = value; }
 
 
 private:
+void createExampleConfig(const std::string& filename);
 int m_sapphire = 8;
 unsigned short m_lastCapsule = 0;
 };

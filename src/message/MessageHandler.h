@@ -1,6 +1,8 @@
 #pragma once
 #include "../common.h"
-class Server;
+class Server; // Forward declaration
+
+struct MSG_AccountLogin;
 class MessageHandler {
     public:
     MessageHandler(Server& server);
@@ -23,8 +25,8 @@ class MessageHandler {
     void enableAccount(int adminSessionId, const std::string& accountName);
     void disableAccount(int adminSessionId, const std::string& accountName, int year, int yearDay);
     void convertGuildNumber(int group, STRUCT_ITEM* item);
+
+    void handleAccountLogin(int sessionId, MSG_AccountLogin* msg);
     
     Server& m_server;
-    
-    
 };

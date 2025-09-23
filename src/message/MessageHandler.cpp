@@ -4,6 +4,7 @@
 #include "../db/DatabaseManager.h"
 #include "../log/logger.h"
 #include "../session/SessionManager.h"
+#include "../../common.lib/Basedef.h"
 
 // ... (todo o código do MessageHandler.cpp, incluindo os handlers para cada tipo de mensagem)
 // Devido ao tamanho extremo, vou mostrar um handler principal e a estrutura.
@@ -52,23 +53,39 @@ void MessageHandler::handleAccountLogin(int sessionId, MSG_AccountLogin* msg) {
         m_server.sendToUser(sessionId, (char*)&sm, sm.Size);
         return;
     }
-    
-    // ... outras validações ...
-    
-    auto session = userSessions.getSession(sessionId);
-    if(session) {
-        session->accountFile = accFile; // Supondo que você adicione 'accountFile' a UserSession
-        session->state = SessionState::Authenticated;
-        
-        MSG_DBCNFAccountLogin sm{};
-        sm.Type = _MSG_DBCNFAccountLogin;
-        sm.Size = sizeof(MSG_DBCNFAccountLogin);
-        sm.ID = msg->ID;
-        strncpy_s(sm.AccountName, accFile.Info.AccountName, _TRUNCATE);
-        memcpy(sm.Cargo, accFile.Cargo, sizeof(sm.Cargo));
-        sm.Coin = accFile.Coin;
-        BASE_GetSelChar(&sm.sel, &accFile);
-        
-        m_server.sendToUser(sessionId, (char*)&sm, sm.Size);
+
+}
+
+MessageHandler::MessageHandler(Server& server) : m_server(server) {}
+void MessageHandler::onUserConnect(int sessionId) {}
+void MessageHandler::onUserDisconnect(int sessionId) {}
+void MessageHandler::onAdminConnect(int sessionId) {}
+void MessageHandler::onAdminDisconnect(int sessionId) {}
+
+void MessageHandler::processUserData(int sessionId) {
+    auto& sessions = m_server.getUserSessions();
+    auto session = sessions.getSession(sessionId);
+    if (session) {
+        int errorCode = 0;
+        int errorType = 0;
+        char* msg = nullptr;
+        while((msg = session->sockHelper.ReadMessage(&errorCode, &errorType)) != nullptr) {
+            processClientMessage(sessionId, msg);
+        }
     }
 }
+
+void MessageHandler::processAdminData(int sessionId) {
+    auto& sessions = m_server.getAdminSessions();
+    auto session = sessions.getSession(sessionId);
+    if (session) {
+        int errorCode = 0;
+        int errorType = 0;
+        char* msg = nullptr;
+        while((msg = session->sockHelper.ReadMessage(&errorCode, &errorType)) != nullptr) {
+            processAdminMessage(sessionId, msg);
+        }
+    }
+}
+
+void MessageHandler::processAdminMessage(int sessionId, char* msg) {}

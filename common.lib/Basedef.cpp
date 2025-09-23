@@ -1,22 +1,6 @@
-/*
-*   Copyright (C) {2015}  {VK, Charles TheHouse}
-*
-*   This program is free software: you can redistribute it and/or modify
-*   it under the terms of the GNU General Public License as published by
-*   the Free Software Foundation, either version 3 of the License, or
-*   (at your option) any later version.
-*
-*   This program is distributed in the hope that it will be useful,
-*   but WITHOUT ANY WARRANTY; without even the implied warranty of
-*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*   GNU General Public License for more details.
-*
-*   You should have received a copy of the GNU General Public License
-*   along with this program.  If not, see [http://www.gnu.org/licenses/].
-*
-*   Contact at:
-*/
-
+// Define WIN32_LEAN_AND_MEAN para excluir APIs raramente usadas dos headers do Windows,
+// acelerando o tempo de compilação.
+#define WIN32_LEAN_AND_MEAN
 
 #include <windows.h>
 #include <windowsx.h>
@@ -34,7 +18,17 @@
 #include "Basedef.h"
 #include "ItemEffect.h"
 
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <array>
+
+char g_pServerList[10][11][64];
+
 #pragma region Defines
+
+#define ADDRESS_SIZE 64
 
 int BaseSIDCHM[4][6] = // Define the base Strength, Intelligence, Dexterity, Constance, HP and MP of the 4 classes
 {
@@ -752,8 +746,6 @@ unsigned char g_pAttribute[1024][1024];
 
 STRUCT_ITEMLIST g_pItemList[MAX_ITEMLIST];
 
-char g_pServerList[MAX_SERVERGROUP][MAX_SERVERNUMBER][64];
-
 int g_dwInitItem = 0;
 
 int g_HeightWidth = 4096;
@@ -762,6 +754,21 @@ int g_HeightPosX = 0;
 int g_HeightPosY = 0;
 
 #pragma endregion
+
+/**
+ * @brief Cria um arquivo serverlist.txt de exemplo com instruções.
+ */
+void CreateExampleServerList()
+{
+    if (std::ofstream outFile("serverlist.txt"); outFile)
+    {
+        outFile << "# Este é um arquivo de exemplo para a lista de servidores.\n"
+                << "# Linhas que começam com '#' são ignoradas pela aplicação.\n"
+                << "# O formato é: [Grupo] [Servidor] [EndereçoIP ou DNS]\n"
+                << "0 0 127.0.0.1\n"
+                << "0 1 login.meuservidor.com\n";
+    }
+}
 
 int BASE_NeedLog(struct STRUCT_ITEM *item, int money)
 {
@@ -2521,7 +2528,7 @@ int BASE_GetMobCheckSum(STRUCT_MOB *mob)
 
 bool BASE_CheckValidString(char *name)
 {
-	int l = strlen(name);
+	size_t l = strlen(name);
 
 	if (l < 4 || l >= NAME_LENGTH)  
 		return FALSE;
@@ -2611,11 +2618,11 @@ void BASE_InitModuleDir()
 	
 	GetModuleFileName(NULL, String, 256);
 
-	int len = strlen(String);
+	size_t len = strlen(String);
 
 	len--;
 
-	for(int i = len; i > 0; i--)
+	for(size_t i = len; i > 0; i--)
 	{
 		if(String[i] == '\\')
 		{
@@ -2916,7 +2923,7 @@ void BASE_SpaceToUnderBar(char *szStr)
 
 void BASE_UnderBarToSpace(char *szStr)
 { 	
-	int nStrLen = strlen(szStr);
+	size_t nStrLen = strlen(szStr);
 	/*
 	unsigned char *pStr = (unsigned char*)szStr;
 	unsigned char *pNext = _mbschr(pStr, '_');
@@ -4850,7 +4857,7 @@ void BASE_InitializeMobname(char *file, int offset)
 				} 
 			}
 
-			int len = 0;
+			size_t len = 0;
 			len = strlen(part1);
 
 			if(len <= 0 || len >= NAME_LENGTH)
@@ -5072,7 +5079,7 @@ int BASE_ReadItemListFile(char *filename, int Build)
 			continue;
 		}
 
-		int len = strlen(Name);
+		size_t len = strlen(Name);
 
         if (len >= ITEMNAME_LENGTH-1)
 		{
@@ -5887,9 +5894,9 @@ int BASE_ReadInitItem()
 
 	GetModuleFileName(NULL, szPathName, 256);
 
-	int len = strlen(szPathName);
+	size_t len = strlen(szPathName);
 
-	for(int nIndex = len-1; nIndex > 0; nIndex--)
+	for(size_t nIndex = len-1; nIndex > 0; nIndex--)
 	{
 		if(szPathName[nIndex]=='\\')
 		{
@@ -6128,7 +6135,7 @@ void BASE_InitializeClientGuildName(int group)
 
 		for(int i = 0; i < 4; i++)
 		{
-			int len = strlen(szGuild[i]);
+			size_t len = strlen(szGuild[i]);
 
 			if(len > 11)
 			{
@@ -6137,7 +6144,8 @@ void BASE_InitializeClientGuildName(int group)
 			}
 			else if(len > 0)
 			{
-				if(!IsClearString3(szGuild[i], len - 1))
+				int reducedSize = (int)(len - (size_t)1);
+				if(!IsClearString3(szGuild[i], reducedSize))
 					szGuild[i][len - 1] = 0;
 			}
 
@@ -6195,7 +6203,7 @@ void BASE_InitializeGuildName()
 			break;
 		}
 
-		int len = strlen(szGuild);
+		size_t len = strlen(szGuild);
 
 		if(len > GUILDNAME_LENGTH-1)
 		{
@@ -6205,7 +6213,8 @@ void BASE_InitializeGuildName()
 
 		if(len > 0)
 		{
-			if(!IsClearString3(szGuild, len - 1))
+			int reducedSize = (int)(len - (size_t)1);
+			if(!IsClearString3(szGuild, reducedSize))
 				ret[3 + len] = 0;
 		}
 
@@ -6214,96 +6223,100 @@ void BASE_InitializeGuildName()
 
 	fclose(fp);
 }
-
+/**
+ * @brief Inicializa a lista de servidores a partir de 'serverlist.txt' e cria
+ * um arquivo 'serverlist.bin' ofuscado para uso pelo cliente do jogo.
+ * @return Retorna true em caso de sucesso, false em caso de falha na leitura ou escrita.
+ */
 int BASE_InitializeServerList()
 {
-	FILE *fp = NULL;
+    std::ifstream inFile("serverlist.txt");
 
-	fp = fopen("./serverlist.txt", "rt");
+    if (!inFile.is_open())
+    {
+        CreateExampleServerList();
+        MessageBoxA(NULL, "Nao foi possivel abrir 'serverlist.txt'. Um arquivo de exemplo foi criado.", "Erro de Arquivo", MB_OK);
+        return FALSE;
+    }
 
-	if(fp == NULL)
-		fp = fopen("../../Common/serverlist.txt", "rt");
+    // Mantendo o memset do código original por fidelidade, embora um array
+    // global já seja inicializado com zeros.
+    memset(g_pServerList, 0, sizeof(g_pServerList));
 
-	if(fp == NULL)
-	{
-		MessageBoxA(NULL, "Can't open server list.txt", "adress", MB_OK);
+    std::string line;
+    while (std::getline(inFile, line))
+    {
+        if (line.empty() || line[0] == '#')
+        {
+            continue;
+        }
 
-		return FALSE;
-	}
-	
-	memset(g_pServerList, 0, sizeof(g_pServerList));
+        std::stringstream ss(line);
+        int serverGroup = -1;
+        int serverNumber = -1;
+        std::string address; // Usa std::string para leitura segura
 
-	char str[256];
-	char address[64];
+        ss >> serverGroup >> serverNumber >> address;
 
-	int ServerGroup;
-	int ServerNumber;
+        if (ss.fail() || 
+            serverGroup < 0 || serverGroup >= MAX_SERVERGROUP ||
+            serverNumber < 0 || serverNumber >= MAX_SERVERNUMBER)
+        {
+            continue; // Pula linha inválida
+        }
 
-	while(1)
-	{
-		char *ret = fgets((char*)str, 255, fp);
+        // *** A PONTE ENTRE O C++ MODERNO E O CÓDIGO LEGADO ***
+        // Copia o conteúdo da std::string para o array C-style de forma segura.
+        strcpy_s(g_pServerList[serverGroup][serverNumber], ADDRESS_SIZE, address.c_str());
+    }
+    // inFile é fechado automaticamente aqui (RAII).
 
-		if(ret == NULL)
-			break;
+    // --- Processo de Ofuscação e Escrita ---
 
-		ServerGroup = -1;
-		ServerNumber = -1;
+    std::ofstream outFile("serverlist.bin", std::ios::binary);
+    if (!outFile.is_open())
+    {
+        MessageBoxA(NULL, "Nao foi possivel criar 'serverlist.bin' para escrita.", "Erro de Arquivo", MB_OK);
+        return FALSE;
+    }
 
-		address[0] = 0;
+    constexpr int szList[64] = {
+        0xA4, 0xA1, 0xA4, 0xA4, 0xA4, 0xA7, 0xA4, 0xA9, 0xA4, 0xB1, 0xA4, 0xB2, 0xA4, 0xB5, 0xA4, 0xB7, 
+        0xA4, 0xB8, 0xA4, 0xBA, 0xA4, 0xBB, 0xA4, 0xBC, 0xA4, 0xBD, 0xA4, 0xBE, 0xA4, 0xBF, 0xA4, 0xC1, 
+        0xA4, 0xC3, 0xA4, 0xC5, 0xA4, 0xC7, 0xA4, 0xCB, 0xA4, 0xCC, 0xA4, 0xD0, 0xA4, 0xD1, 0xA4, 0xD3, 
+        0xA4, 0xBF, 0xA4, 0xC4, 0xA4, 0xD3, 0xA4, 0xC7, 0xA4, 0xCC, 0xB0, 0xA1, 0xB3, 0xAA, 0xB4, 0xD9
+    };
+    
+    // 1. Ofusca os dados. Usamos loops indexados pois g_pServerList é um array C-style.
+    for (int k = 0; k < MAX_SERVERGROUP; k++)
+    {
+        for (int j = 0; j < MAX_SERVERNUMBER; j++)
+        {
+            for (size_t i = 0; i < ADDRESS_SIZE; i++)
+            {
+                g_pServerList[k][j][i] += szList[63 - i];
+            }
+        }
+    }
 
-		sscanf(str, "%d %d %s", &ServerGroup, &ServerNumber, address);
+    // 2. Escreve o bloco de memória do array C-style diretamente no arquivo.
+    outFile.write(reinterpret_cast<const char*>(g_pServerList), sizeof(g_pServerList));
+    // outFile é fechado automaticamente aqui.
 
-		if((ServerGroup < 0 ||ServerGroup >= MAX_SERVERGROUP) || (ServerNumber < 0 || ServerNumber > MAX_SERVERNUMBER))
-			  break;
+    // 3. Desfaz a ofuscação para restaurar os dados em memória.
+    for (int k = 0; k < MAX_SERVERGROUP; k++)
+    {
+        for (int j = 0; j < MAX_SERVERNUMBER; j++)
+        {
+            for (size_t i = 0; i < ADDRESS_SIZE; i++)
+            {
+                g_pServerList[k][j][i] -= szList[63 - i];
+            }
+        }
+    }
 
-		strcpy(g_pServerList[ServerGroup][ServerNumber], address);
-	};
-
-	fclose(fp);
-
-	FILE *fpBin = fopen("./serverlist.bin", "w");
-
-	if(fp != NULL)
-	{
-		int szList[64] = {
-			0xA4, 0xA1, 0xA4, 0xA4, 0xA4, 0xA7, 0xA4, 0xA9, 0xA4, 0xB1, 0xA4, 0xB2, 0xA4, 0xB5, 0xA4, 0xB7, 
-			0xA4, 0xB8, 0xA4, 0xBA, 0xA4, 0xBB, 0xA4, 0xBC, 0xA4, 0xBD, 0xA4, 0xBE, 0xA4, 0xBF, 0xA4, 0xC1, 
-			0xA4, 0xC3, 0xA4, 0xC5, 0xA4, 0xC7, 0xA4, 0xCB, 0xA4, 0xCC, 0xA4, 0xD0, 0xA4, 0xD1, 0xA4, 0xD3, 
-			0xA4, 0xBF, 0xA4, 0xC4, 0xA4, 0xD3, 0xA4, 0xC7, 0xA4, 0xCC, 0xB0, 0xA1, 0xB3, 0xAA, 0xB4, 0xD9
-		};
-
-		for(int k = 0; k < MAX_SERVERGROUP; k++)
-		{
-			for(int j = 0; j < MAX_SERVERNUMBER; j++)
-			{
-				for(int i = 0; i < 64; i++)
-				{
-					g_pServerList[k][j][i] += szList[63-i];
-
-				}
-			}
-		}
-
-		fwrite(g_pServerList, MAX_SERVERGROUP*MAX_SERVERNUMBER, 64, fpBin);
-		fclose(fpBin);
-
-		for(int k = 0; k < MAX_SERVERGROUP; k++)
-		{
-			for(int j = 0; j < MAX_SERVERNUMBER; j++)
-			{
-				for(int i = 0; i < 64; i++)
-				{
-					g_pServerList[k][j][i] -= szList[63-i];
-				}
-			}
-		}
-
-	}
-
-	return TRUE;
-		
+    return TRUE;
 }
-
 int BASE_InitializeAttribute()
 {
 	int tsum = 0;

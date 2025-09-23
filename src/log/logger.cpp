@@ -18,7 +18,7 @@ void Logger::Shutdown() {
     }
 }
 
-void Logger::Log(const std::string& message, const std::string& category) {
+void Logger::Log(const std::string& message, const std::string& category, bool isError) {
     auto now = std::chrono::system_clock::now();
     auto in_time_t = std::chrono::system_clock::to_time_t(now);
     
@@ -27,10 +27,16 @@ void Logger::Log(const std::string& message, const std::string& category) {
 	tm* localtm = localtime(&tt);
     ss << std::put_time(localtm, "%Y-%m-%d %X");
     
-    std::string logMessage = "[" + ss.str() + "] [" + category + "] " + message;
+    std::string prefix = isError ? "[ERRO] " : "";
+    std::string logMessage = "[" + ss.str() + "] [" + category + "] " + prefix + message;
     
     std::lock_guard<std::mutex> lock(m_mutex);
-    std::cout << logMessage << std::endl;
+    if (isError) {
+        std::cerr << logMessage << std::endl;
+    } else {
+        std::cout << logMessage << std::endl;
+    }
+    
     if (m_logFile.is_open()) {
         m_logFile << logMessage << std::endl;
 		m_logFile.flush();

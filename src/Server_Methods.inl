@@ -1,3 +1,6 @@
+#include "log/logger.h"
+#include "Server.h"
+
 // Este arquivo contém a implementação dos métodos da classe Server para manter Server.cpp mais limpo.
 void Server::run() {
     m_isRunning = true;
@@ -21,7 +24,7 @@ void Server::shutdown() {
     auto& gameData = m_dataManager->getGameData();
     m_config->setSapphire(gameData.Sapphire);
     m_config->setLastCapsule(gameData.LastCapsule);
-    m_config->save("Config.txt");
+    m_config->save("../config/Config.txt");
     
     m_dataManager->writeGuildInfo(); 
     Logger::Shutdown();
@@ -34,7 +37,7 @@ void Server::processTick() {
 void Server::sendToUser(int serverId, const char* buffer, size_t size) {
     auto session = m_userSessions->getSession(serverId);
     if (session && session->socket != INVALID_SOCKET) {
-        session->sockHelper.SendOneMessage((char*)buffer, size);
+        session->sockHelper.SendOneMessage((char*)buffer, (int)size);
     }
 }
 void Server::broadcastToUsers(const char* buffer, size_t size) {
@@ -45,7 +48,7 @@ void Server::broadcastToUsers(const char* buffer, size_t size) {
 void Server::sendToAdmin(int sessionId, const char* buffer, size_t size) {
     auto session = m_adminSessions->getSession(sessionId);
     if (session && session->socket != INVALID_SOCKET) {
-        session->sockHelper.SendOneMessage((char*)buffer, size);
+        session->sockHelper.SendOneMessage((char*)buffer, (int)size);
     }
 }
 void Server::disconnectSession(int sessionId, bool isAdmin) {
@@ -55,14 +58,42 @@ void Server::disconnectSession(int sessionId, bool isAdmin) {
         m_userSessions->removeSession(sessionId);
     }
 }
+
+void Server::createExampleAdminFile() {
+    // Garante que o diretório de configuração exista
+    std::filesystem::path configDir("../config");
+    if (!std::filesystem::exists(configDir)) {
+        std::filesystem::create_directory(configDir);
+    }
+
+    std::ofstream file("../config/Admin.txt");
+    if (file.is_open()) {
+        file << "# Este arquivo lista os IPs que tem permissão de administrador.\n";
+        file << "# O formato é: [índice] [IP]\n";
+        file << "# Exemplo:\n";
+        file << "0 127.0.0.1\n";
+    }
+}
+
 void Server::readAdminIPs() {
-    std::ifstream file("Admin.txt");
+    std::ifstream file("../config/Admin.txt");
     if (!file.is_open()) {
-        Logger::Log("Arquivo Admin.txt nao encontrado. Nenhum admin tera acesso.", "Server");
-        return;
+        Logger::Log("AVISO: Arquivo Admin.txt nao encontrado. Criando um novo com exemplo.", "Server");
+        createExampleAdminFile();
+        
+        file.open("../config/Admin.txt");
+        if (!file.is_open()) {
+            Logger::Log("ERRO: Falha ao criar e abrir o arquivo ../config/Admin.txt", "Server");
+            MessageBoxA(NULL, "Falha ao criar e abrir o arquivo ../config/Admin.txt", "Erro Crítico", MB_OK | MB_ICONERROR);
+            return;
+        }
+        MessageBoxA(NULL, "Arquivo '../config/Admin.txt' não encontrado.\nUm novo foi criado com o IP 127.0.0.1 como exemplo.", "Aviso de Configuração", MB_OK | MB_ICONWARNING);
     }
     std::string line;
     while (std::getline(file, line)) {
+        if (line.empty() || line[0] == '#') {
+            continue;
+        }
         int idx;
         unsigned int a, b, c, d;
         std::replace(line.begin(), line.end(), '.', ' ');
@@ -75,9 +106,10 @@ void Server::readAdminIPs() {
     }
     Logger::Log("Lista de IPs de admin carregada.", "Server");
 }
+
 bool Server::initializeServerIndex() {
     auto& gameData = m_dataManager->getGameData();
-    BASE_InitializeServerList(gameData.g_pServerList);
+    BASE_InitializeServerList();
     char hostname[256];
     if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR) {
         Logger::Log("Falha ao obter o hostname.", "Server", true);
@@ -90,12 +122,14 @@ bool Server::initializeServerIndex() {
         return false;
     }
     int serverIndex = -1;
+    Logger::Log("Procurando por IPs locais no serverlist.txt...", "Server");
     for (auto p = res; p != nullptr; p = p->ai_next) {
         if (p->ai_family != AF_INET) continue;
         char ipStr[INET_ADDRSTRLEN];
         inet_ntop(p->ai_family, &((sockaddr_in*)p->ai_addr)->sin_addr, ipStr, sizeof(ipStr));
+        Logger::Log(std::string("IP local encontrado: ") + ipStr, "Server");
         for (int i = 0; i < MAX_SERVERGROUP; i++) {
-            if (strcmp(gameData.g_pServerList[i][0], ipStr) == 0) {
+            if (strcmp(g_pServerList[i][0], ipStr) == 0) {
                 serverIndex = i;
                 break;
             }

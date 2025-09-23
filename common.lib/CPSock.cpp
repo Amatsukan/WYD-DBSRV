@@ -297,7 +297,9 @@ SOCKET CPSock::ConnectBillServer(char *HostAddr, int Port, int ip, int WSA)
 		}
 	}
 
-	sprintf(msg, "sock:%d ip:%d.%d.%d.%d port:%d-%d", tSock, local_sin.sin_addr.S_un.S_un_b.s_b1, local_sin.sin_addr.S_un.S_un_b.s_b2, 
+	int sock_number = (unsigned int)tSock;
+
+	sprintf(msg, "sock:%d ip:%d.%d.%d.%d port:%d-%d", sock_number, local_sin.sin_addr.S_un.S_un_b.s_b1, local_sin.sin_addr.S_un.S_un_b.s_b2, 
 		local_sin.sin_addr.S_un.S_un_b.s_b3, local_sin.sin_addr.S_un.S_un_b.s_b4, local_sin.sin_port, ConnectPort); 
 
 	ConnectPort++;
@@ -308,7 +310,7 @@ SOCKET CPSock::ConnectBillServer(char *HostAddr, int Port, int ip, int WSA)
 
 	if(connect(tSock, (PSOCKADDR)&remote_sin, sizeof(remote_sin)) < 0)       
 	{	
-		sprintf(msg, "sock:%d ip:%d.%d.%d.%d port:%d-%d", tSock, remote_sin.sin_addr.S_un.S_un_b.s_b1, remote_sin.sin_addr.S_un.S_un_b.s_b2, 
+		sprintf(msg, "sock:%d ip:%d.%d.%d.%d port:%d-%d", sock_number, remote_sin.sin_addr.S_un.S_un_b.s_b1, remote_sin.sin_addr.S_un.S_un_b.s_b2, 
 			remote_sin.sin_addr.S_un.S_un_b.s_b3, remote_sin.sin_addr.S_un.S_un_b.s_b4, remote_sin.sin_port, Port); 
 
 		closesocket(tSock);
@@ -317,7 +319,7 @@ SOCKET CPSock::ConnectBillServer(char *HostAddr, int Port, int ip, int WSA)
 		return 0;
 	}
 
-	sprintf(msg, "sock:%d ip:%d.%d.%d.%d port:%d-%d", tSock, remote_sin.sin_addr.S_un.S_un_b.s_b1, remote_sin.sin_addr.S_un.S_un_b.s_b2, 
+	sprintf(msg, "sock:%d ip:%d.%d.%d.%d port:%d-%d", sock_number, remote_sin.sin_addr.S_un.S_un_b.s_b1, remote_sin.sin_addr.S_un.S_un_b.s_b2, 
 		remote_sin.sin_addr.S_un.S_un_b.s_b3, remote_sin.sin_addr.S_un.S_un_b.s_b4, remote_sin.sin_port, Port);
 
     if(WSAAsyncSelect(tSock, hWndMain, WSA, FD_READ|FD_CLOSE) > 0) 
@@ -514,10 +516,11 @@ BOOL CPSock::AddMessage(char *pMsg, int Size)
 {
 	char temp[256];
 	HEADER *pSMsg = (HEADER *)pMsg;
+	int sock_number = (unsigned int)Sock;
 
 	if(nSendPosition + Size >= SEND_BUFFER_SIZE)	
 	{	
-		sprintf(temp, "err,add buffer full %d %d %d %d", nSendPosition, Size, pSMsg->Type, Sock);
+		sprintf(temp, "err,add buffer full %d %d %d %d", nSendPosition, Size, pSMsg->Type, sock_number);
 		Log(temp, "-system", 0);
 
 		return FALSE;
@@ -526,7 +529,7 @@ BOOL CPSock::AddMessage(char *pMsg, int Size)
 	// check socket valid
 	if	(Sock <= 0)
 	{
-		sprintf(temp, "err,add buffer invalid %d %d %d %d", nSendPosition, Size, pSMsg->Type, Sock);
+		sprintf(temp, "err,add buffer invalid %d %d %d %d", nSendPosition, Size, pSMsg->Type, sock_number);
 		Log(temp, "-system", 0);
 
 		return FALSE;
