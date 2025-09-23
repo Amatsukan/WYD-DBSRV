@@ -2,44 +2,125 @@ Tarefas migradas e consolidadas de https://github.com/ErickAlcan/W2PP/tree/maste
 
 # Task List - DBSrv (Revisada)
 
+## Metodologia de Custo de Complexidade
+
+Cada tarefa nesta lista possui uma estimativa de custo de complexidade para o desenvolvimento. A escala utilizada é:
+
+-   **Baixo:** Tarefas simples, rápidas, com baixo risco e impacto localizado. (Ex: Renomear uma variável, corrigir um texto, implementar uma função utilitária simples).
+-   **Médio:** Tarefas que exigem alguma análise, mas são bem compreendidas e afetam um número limitado de arquivos. (Ex: Adicionar um novo campo a uma estrutura, implementar uma função com lógica de negócio simples).
+-   **Alto:** Tarefas complexas que envolvem múltiplas partes do sistema, refatoração, ou que exigem pesquisa e planejamento cuidadoso. (Ex: Implementar um novo sistema, refatorar uma classe principal, alterar a forma como dados são processados).
+-   **Muito Alto:** Tarefas de grande porte, com alto risco, que podem exigir mudanças arquitetônicas significativas ou pesquisa aprofundada. (Ex: Mudar um sistema de persistência, refatorar o core do sistema de rede).
+
+---
+
 ## 1. Arquitetura e Refatoração
 - [ ] **INCOMPLETO:** Criar ou completar um *registry pattern* para associar IDs de pacotes a funções de tratamento, eliminando a necessidade de `switch/case`.
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Exige uma refatoração significativa no `MessageHandler` e a criação de uma estrutura de dados para mapear pacotes, com impacto direto em como toda a comunicação é processada.
+
 - [ ] **from-W2PP:** Mapear e encapsular (ou eliminar) as variáveis globais do projeto original (ex: `Sapphire`, `g_pGuildWar`) dentro das novas classes de gerenciamento. (Origem: `Server.h`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Requer uma análise cuidadosa de todo o código para encontrar onde as variáveis globais são usadas e garantir que a encapsulação não quebre a lógica existente.
+
 - [ ] **NOVO:** Quebrar a `common.lib` em arquivos menores (máx 500 linhas) para melhorar a organização e flexibilidade.
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** É uma refatoração estrutural que pode causar quebras de compilação em todo o projeto. Exige cuidado para reorganizar as dependências e includes.
 
 ## 2. Configuração e Inicialização
 - [ ] **INCOMPLETO:** Implementar uma rotina de debug para exibir as configurações carregadas no console (`DrawConfig` do original).
+    -   **Custo de Complexidade:** Baixo
+    -   **Justificativa:** Tarefa simples de I/O, lendo os valores das variáveis de configuração e imprimindo no console.
+
 - [ ] **INCOMPLETO:** Validar a leitura do arquivo `Admin.txt` e o carregamento das permissões de administrador.
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Envolve I/O de arquivo e lógica de parsing para carregar os IPs em uma estrutura de dados segura.
+
 - [ ] **from-W2PP:** Implementar o carregamento dos status base das classes/mobs a partir da pasta `BaseMob`. (Origem: `Server.cpp`, função `WinMain`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Envolve I/O de múltiplos arquivos binários e o carregamento dos dados nas estruturas corretas na inicialização.
 
 ## 3. Gerenciamento de Contas e Personagens
 - [ ] **from-W2PP:** Implementar a criação (`AddAccount`), atualização (`UpdateAccount`) e verificação de nomes (`DBCheckImpleName`) de contas. (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Envolve I/O de arquivos, manipulação de estruturas de dados complexas (`STRUCT_ACCOUNTFILE`) e lógica de negócios para validação.
+
 - [ ] **from-W2PP:** Implementar a funcionalidade de obter os dados para a tela de seleção de personagem (`DBGetSelChar`). (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Requer a leitura do arquivo da conta e a formatação dos dados dos personagens para envio ao cliente.
+
 - [ ] **from-W2PP:** Implementar o sistema de senhas seguras (`GetEncPassword`, `SetEncPassword`). (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Lida com segurança. Exige a implementação da lógica de criptografia/geração de chaves e sua integração no fluxo de login e troca de servidor.
+
 - [ ] **from-W2PP:** Adicionar a funcionalidade para rastrear contas por MAC address (`GetAccountsByMac`) e o sistema de "conta primária". (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Requer lógica de busca na lista de usuários conectados e o envio de mensagens específicas, mas o escopo é bem definido.
 
 ## 4. Sistema de Guildas
 - [ ] **from-W2PP:** Implementar as mecânicas de guerra (`_MSG_War`) e aliança (`_MSG_GuildAlly`) entre guildas. (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** É um sistema de jogo complexo que envolve o estado de múltiplas guildas e a comunicação desse estado para todos os servidores.
+
 - [ ] **from-W2PP:** Implementar o recebimento de "guild zone reports" e a retransmissão da informação para os demais servidores. (Origem: `CFileDB.cpp`, case `_MSG_GuildZoneReport`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Envolve o processamento de uma mensagem de rede específica e a lógica de broadcast para outros servidores.
+
 - [ ] **from-W2PP:** Implementar o reset semanal da fama (fame) das guildas. (Origem: `Server.cpp`, função `ProcessSecTimer`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Requer uma lógica de timer precisa para executar no dia/hora corretos e a iteração sobre os dados de todas as guildas.
 
 ## 5. Sincronização e Integração
 - [ ] **from-W2PP:** Implementar o sistema de "redirecionamento" via `redirect.txt` para transferência de personagens entre servidores. (Origem: `Server.cpp`, função `WinMain`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Lida com a conexão ativa a outro servidor e a coordenação de estado entre dois processos DBSrv, o que é complexo.
+
 - [ ] **from-W2PP:** Implementar a troca de servidor por um jogador (`_MSG_DBServerChange`), incluindo a geração de chaves de segurança temporárias. (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Sistema complexo que envolve criptografia, estado de sessão e comunicação entre o servidor de jogo e o DBSrv de destino.
+
 - [ ] **from-W2PP:** Replicar o mecanismo de importação (contas, itens, donates) baseado em arquivos depositados em diretórios `Common`. (Origem: `CReadFiles.cpp`)
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Exige a implementação de rotinas de I/O que monitoram diretórios, fazem parsing de diferentes formatos de arquivo e aplicam a lógica de negócio correspondente.
+
 - [ ] **from-W2PP:** Implementar a atualização de senhas de contas a partir de arquivos (`UpdateUser`). (Origem: `CReadFiles.cpp`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Similar à importação, mas com um escopo menor: ler um arquivo, fazer o parsing e atualizar um campo específico no arquivo da conta.
+
 - [ ] **from-W2PP:** Criar rotina para gerar arquivos de status de conexão para serem lidos por um painel web. (Origem: `CReadFiles.cpp`, `UpdateConnection`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Envolve coletar dados de estado do servidor e formatá-los em um arquivo de texto/csv em um timer.
 
 ## 6. Funcionalidades de Jogo (Gameplay)
 - [ ] **from-W2PP:** Implementar o sistema de "Cápsulas de Personagem" (encapsular, ler e restaurar). (Origem: `CFileDB.cpp`, cases `_MSG_DBPutInCapsule`, `_MSG_DBCapsuleInfo`, `_MSG_DBOutCapsule`)
+    -   **Custo de Complexidade:** Muito Alto
+    -   **Justificativa:** É um sistema de gameplay completo e complexo, que envolve a criação de um novo tipo de "item", a remoção temporária de um personagem da conta e a lógica de restauração, com alto risco de corrupção de dados se não for feito corretamente.
+
 - [ ] **from-W2PP:** Implementar a "Trombeta Mágica" (`_MSG_MagicTrumpet`) para envio de mensagens globais. (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Requer a implementação de uma lógica de broadcast de uma mensagem específica para todos os servidores de jogo e clientes de administração conectados.
+
 - [ ] **from-W2PP:** Adicionar a lógica de "troca de nome" de personagem no login, baseada em itens específicos. (Origem: `CFileDB.cpp`, case `_MSG_DBAccountLogin`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** É uma lógica de negócio muito específica, que precisa ser integrada cuidadosamente no já complexo processo de login de conta.
 
 ## 7. Logging e Timers
 - [ ] **INCOMPLETO:** Implementar `DayLog_ReadAccountInDir` para gerar logs diários de ganho de experiência. (Origem: `Server.cpp`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Requer uma função que varre recursivamente os diretórios de contas, abre cada arquivo, e faz o parsing dos dados de experiência.
+
 - [ ] **from-W2PP:** Implementar a função `ProcessRecord` para salvar logs detalhados de operações específicas. (Origem: `CFileDB.cpp`)
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Requer a criação de uma nova rotina de logging para salvar informações de auditoria em um formato e local específicos.
+
 - [ ] **INCOMPLETO:** Implementar um timer de minuto (`ProcessMinTimer`) e refinar o timer de segundo (`ProcessSecTimer`/`periodicUpdate`).
+    -   **Custo de Complexidade:** Médio
+    -   **Justificativa:** Envolve a refatoração da lógica de timers para permitir diferentes granularidades (segundo, minuto) e a migração das tarefas existentes.
 
 ## 8. Build e Utilitários
 - [ ] **INCOMPLETO:** Incluir um target de testes unitários no `CMakeLists.txt`.
+    -   **Custo de Complexidade:** Alto
+    -   **Justificativa:** Exige a configuração de um framework de testes (como Google Test), a modificação do CMake para incluir um novo executável de teste e a criação da estrutura inicial dos testes.
+
 - [ ] **INCOMPLETO:** Implementar uma função genérica `file_exists` para verificação de existência de arquivos.
+    -   **Custo de Complexidade:** Baixo
+    -   **Justificativa:** É uma função utilitária simples e autocontida.
