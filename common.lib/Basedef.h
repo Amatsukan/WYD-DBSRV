@@ -2434,6 +2434,8 @@ void BASE_SetItemDate(STRUCT_ITEM *Item, int day);
 int  BASE_CheckItemDate(STRUCT_ITEM *Item);
 void BASE_CheckFairyDate(STRUCT_ITEM *Item);
 
+bool file_exists(const std::string& name);
+
 #pragma endregion
 
 #pragma region Basedef Externs

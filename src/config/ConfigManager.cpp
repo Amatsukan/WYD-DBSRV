@@ -61,3 +61,10 @@ void ConfigManager::save(const std::string& filename) {
     
     Logger::Log("Configuracoes salvas em " + filename, "Config");
 }
+
+void ConfigManager::printConfig() {
+    Logger::Log("========== Configuracoes Atuais ==========", "Config");
+    Logger::Log("Sapphire: " + std::to_string(m_sapphire), "Config");
+    Logger::Log("LastCapsule: " + std::to_string(m_lastCapsule), "Config");
+    Logger::Log("======================================", "Config");
+}

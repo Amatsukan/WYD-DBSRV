@@ -6825,3 +6825,8 @@ void  BASE_CheckFairyDate(STRUCT_ITEM *Item)
 	Item->stEffect[1].cValue = hour;
 	Item->stEffect[2].cValue = min;
 }
+
+bool file_exists(const std::string& name) {
+    struct stat buffer;
+    return (stat(name.c_str(), &buffer) == 0);
+}

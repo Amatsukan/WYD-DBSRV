@@ -10,6 +10,8 @@ unsigned short getLastCapsule() const { return m_lastCapsule; }
 void setSapphire(int value) { m_sapphire = value; }
 void setLastCapsule(unsigned short value) { m_lastCapsule = value; }
 
+void printConfig();
+
 
 private:
 void createExampleConfig(const std::string& filename);

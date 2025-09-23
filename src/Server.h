@@ -18,6 +18,7 @@ class Server {
     void shutdown();
     
     void processTick();
+    void drawConfig();
     
     // Funções de comunicação para serem usadas por outros módulos
     void sendToUser(int serverId, const char* buffer, size_t size);

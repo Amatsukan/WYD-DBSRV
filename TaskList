@@ -125,6 +125,6 @@ Cada tarefa nesta lista possui uma estimativa de custo de complexidade para o de
     -   **Custo de Complexidade:** Alto
     -   **Justificativa:** Exige a configuração de um framework de testes (como Google Test), a modificação do CMake para incluir um novo executável de teste e a criação da estrutura inicial dos testes.
 
-- [ ] **INCOMPLETO:** Implementar uma função genérica `file_exists` para verificação de existência de arquivos.
+- [x] **CONCLUÍDO:** Implementar uma função genérica `file_exists` para verificação de existência de arquivos.
     -   **Custo de Complexidade:** Baixo
     -   **Justificativa:** É uma função utilitária simples e autocontida.

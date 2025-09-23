@@ -199,6 +199,8 @@ void Server::handleConsoleInput() {
             m_userSessions->printStatus();
             m_adminSessions->printStatus();
             Logger::Log("--------------------------", "Console");
+        } else if (line == "drawconfig") {
+            drawConfig();
         }
     }
 }
