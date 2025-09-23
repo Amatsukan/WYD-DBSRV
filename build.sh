@@ -19,6 +19,7 @@
 
 # --- Configuracao ---
 BUILD_DIR="build"
+DEBUG_DIR="debug"
 
 # --- Funcoes ---
 show_help() {
@@ -59,6 +60,7 @@ do_clean() {
     echo "--- Limpando o diretorio de build... ---"
     if [ -d "$BUILD_DIR" ]; then
         rm -rf "$BUILD_DIR"
+        rm -rf "$DEBUG_DIR/*"
         echo "Diretorio '$BUILD_DIR' removido."
     else
         echo "Diretorio '$BUILD_DIR' nao encontrado. Nada a fazer."
