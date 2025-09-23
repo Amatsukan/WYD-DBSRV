@@ -6,7 +6,7 @@
             "type": "shell",
             "command": ".\\build.bat",
             "args": [
-                "build"
+                "rebuild"
             ],
             "group": {
                 "kind": "build",
@@ -14,9 +14,9 @@
             },
             "presentation": {
                 "echo": true,
-                "reveal": "silent",
+                "reveal": "always",
                 "focus": false,
-                "panel": "shared",
+                "panel": "new",
                 "showReuseMessage": false,
                 "clear": false
             },

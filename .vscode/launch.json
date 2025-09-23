@@ -5,10 +5,10 @@
             "name": "Debug DBSrv (MSVC)",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/Debug/DBSrv.exe",
+            "program": "${workspaceFolder}/Debug/DBSrv.exe",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/build/Debug",
+            "cwd": "${workspaceFolder}",
             "environment": [],
             "console": "integratedTerminal",
             "preLaunchTask": "build"

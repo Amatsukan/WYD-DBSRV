@@ -5,6 +5,7 @@ Tarefas migradas e consolidadas de https://github.com/ErickAlcan/W2PP/tree/maste
 ## 1. Arquitetura e Refatoração
 - [ ] **INCOMPLETO:** Criar ou completar um *registry pattern* para associar IDs de pacotes a funções de tratamento, eliminando a necessidade de `switch/case`.
 - [ ] **from-W2PP:** Mapear e encapsular (ou eliminar) as variáveis globais do projeto original (ex: `Sapphire`, `g_pGuildWar`) dentro das novas classes de gerenciamento. (Origem: `Server.h`)
+- [ ] **NOVO:** Quebrar a `common.lib` em arquivos menores (máx 500 linhas) para melhorar a organização e flexibilidade.
 
 ## 2. Configuração e Inicialização
 - [ ] **INCOMPLETO:** Implementar uma rotina de debug para exibir as configurações carregadas no console (`DrawConfig` do original).
