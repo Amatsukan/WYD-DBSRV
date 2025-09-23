@@ -1,1 +1,14 @@
-build
+# Build artifacts
+/Debug/
+/build/
+*.exe
+*.pdb
+*.log
+*.bin
+*.txt
+
+# Original project backup
+/W2PP/
+
+# VSCode
+.vscode/
