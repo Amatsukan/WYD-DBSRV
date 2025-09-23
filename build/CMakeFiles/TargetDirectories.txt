@@ -1,3 +1,0 @@
-C:/Users/amatsukan/wyd/WYD-Server-CPP/Code/DBSrv/build/CMakeFiles/DBSrv.dir
-C:/Users/amatsukan/wyd/WYD-Server-CPP/Code/DBSrv/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/amatsukan/wyd/WYD-Server-CPP/Code/DBSrv/build/CMakeFiles/ZERO_CHECK.dir
