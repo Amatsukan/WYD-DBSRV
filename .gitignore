@@ -5,7 +5,7 @@
 *.pdb
 *.log
 *.bin
-*.txt
+serverlist.txt
 
 # Original project backup
 /W2PP/
